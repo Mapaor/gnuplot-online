@@ -1,93 +1,118 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { GnuplotModule } from '@/lib/gnuplot-loader';
 
-interface UsePlotGenerationProps {
-  gnuplotModule: GnuplotModule | null;
-  addDebug: (message: string) => void;
-}
+export const usePlotGeneration = (
+  gnuplotModule: GnuplotModule | null,
+  plotCode: string,
+  dataContent: string,
+  addDebug: (message: string) => void
+) => {
+  const [svgOutput, setSvgOutput] = useState<string>('');
+  const [loading, setLoading] = useState(false);
 
-interface PlotState {
-  svgContent: string;
-  isLoading: boolean;
-  hasError: boolean;
-}
-
-export function usePlotGeneration({ gnuplotModule, addDebug }: UsePlotGenerationProps) {
-  const [plotState, setPlotState] = useState<PlotState>({
-    svgContent: '',
-    isLoading: false,
-    hasError: false,
-  });
-
-  const generatePlot = useCallback(async (code: string, data?: string) => {
+  const generatePlot = useCallback(async () => {
     if (!gnuplotModule) {
-      addDebug('Gnuplot module not initialized');
+      addDebug('Gnuplot module not loaded yet');
       return;
     }
 
-    setPlotState(prev => ({ ...prev, isLoading: true, hasError: false }));
+    setLoading(true);
+    addDebug('Starting plot generation...');
 
     try {
-      addDebug('Generating plot...');
-      
-      // Clear any existing data and create temporary file for gnuplot code
-      const gnuplotCode = `
-        set terminal svg enhanced mouse standalone size 640,480
-        set output "/tmp/output.svg"
-        ${code}
-      `;
-      
-      // Write gnuplot code to virtual filesystem
-      gnuplotModule.FS.writeFile('/tmp/script.gp', gnuplotCode);
-      addDebug('Gnuplot script written to virtual filesystem');
-      
-      // If data is provided, write it to a data file
-      if (data) {
-        gnuplotModule.FS.writeFile('/tmp/data.dat', data);
-        addDebug('Data file written to virtual filesystem');
+      // Clear any existing output file first
+      try {
+        if (gnuplotModule.FS.unlink) {
+          gnuplotModule.FS.unlink('plot.svg');
+          addDebug('Cleared previous plot.svg file');
+        }
+      } catch {
+        // File doesn't exist, which is fine
+        addDebug('No previous plot.svg file to clear');
       }
-      
-      // Run gnuplot with the script
-      gnuplotModule.callMain(['/tmp/script.gp']);
-      addDebug('Gnuplot execution completed');
-      
-      // Read the generated SVG
-      const svgContent = gnuplotModule.FS.readFile('/tmp/output.svg', { encoding: 'utf8' });
-      addDebug('SVG output read from virtual filesystem');
-      
-      setPlotState({
-        svgContent,
-        isLoading: false,
-        hasError: false,
-      });
-      
+
+      // Write the data content to a file
+      gnuplotModule.FS.writeFile('data.dat', dataContent);
+      addDebug('Data content written to data.dat in virtual filesystem');
+
+      // Write the gnuplot script to a file
+      gnuplotModule.FS.writeFile('script.gnuplot', plotCode);
+      addDebug('Gnuplot script written to virtual filesystem');
+      addDebug(`Script content: ${plotCode.substring(0, 100)}...`);
+
+      // Execute gnuplot with error handling
+      let result: number;
+      try {
+        result = gnuplotModule.callMain(['script.gnuplot']);
+        addDebug(`Gnuplot execution completed with result: ${result}`);
+      } catch (execErr) {
+        addDebug(`Gnuplot execution error: ${execErr}`);
+        throw new Error(`Gnuplot execution failed: ${execErr}`);
+      }
+
+      // List files to see what was created
+      try {
+        if (gnuplotModule.FS.readdir) {
+          const files = gnuplotModule.FS.readdir('/');
+          addDebug(`Files in root directory: ${files.join(', ')}`);
+        }
+      } catch {
+        addDebug('Could not list files in root directory');
+      }
+
+      // Read the SVG output
+      try {
+        const svgContent = gnuplotModule.FS.readFile('plot.svg', { encoding: 'utf8' });
+        if (svgContent && svgContent.length > 0) {
+          setSvgOutput(svgContent);
+          addDebug(`SVG output read successfully (${svgContent.length} characters)`);
+          addDebug(`SVG preview: ${svgContent.substring(0, 200)}...`);
+        } else {
+          addDebug('SVG file exists but is empty');
+          setSvgOutput('<svg width="400" height="300"><text x="50" y="150" fill="orange">Generated SVG file is empty</text></svg>');
+        }
+      } catch (readErr) {
+        addDebug(`Could not read SVG output: ${readErr}`);
+        setSvgOutput('<svg width="400" height="300"><text x="50" y="150" fill="red">Error reading plot output</text></svg>');
+      }
+
       // Clean up temporary files
       try {
-        // Check if unlink method exists on FS
-        if (typeof gnuplotModule.FS.unlink === 'function') {
-          gnuplotModule.FS.unlink('/tmp/script.gp');
-          if (data) gnuplotModule.FS.unlink('/tmp/data.dat');
-          gnuplotModule.FS.unlink('/tmp/output.svg');
-          addDebug('Temporary files cleaned up');
-        } else {
-          addDebug('FS.unlink method not available, skipping cleanup');
+        if (gnuplotModule.FS.unlink) {
+          gnuplotModule.FS.unlink('script.gnuplot');
+          addDebug('Cleaned up script.gnuplot file');
+          gnuplotModule.FS.unlink('data.dat');
+          addDebug('Cleaned up data.dat file');
         }
-      } catch (cleanupErr) {
-        addDebug(`Warning: Error during cleanup: ${cleanupErr}`);
+      } catch {
+        // File cleanup is optional
+        addDebug('Could not clean up temporary files (not critical)');
       }
     } catch (err) {
       addDebug(`Error generating plot: ${err}`);
       console.error('Error generating plot:', err);
-      setPlotState({
-        svgContent: '',
-        isLoading: false,
-        hasError: true,
-      });
+      setSvgOutput('<svg width="400" height="300"><text x="50" y="150" fill="red">Plot generation failed</text></svg>');
+    } finally {
+      setLoading(false);
     }
-  }, [gnuplotModule, addDebug]);
+  }, [gnuplotModule, plotCode, dataContent, addDebug]);
+
+  // Auto-generate plot when gnuplotModule loads or plotCode/dataContent changes
+  useEffect(() => {
+    if (gnuplotModule && plotCode.trim()) {
+      const timeoutId = setTimeout(() => {
+        generatePlot();
+      }, 500); // Small delay to avoid rapid re-generation
+      
+      return () => clearTimeout(timeoutId);
+    }
+  }, [gnuplotModule, plotCode, dataContent, generatePlot]);
 
   return {
-    ...plotState,
-    generatePlot,
+    svgOutput,
+    loading,
+    generatePlot
   };
-}
+};
+
+export default usePlotGeneration;

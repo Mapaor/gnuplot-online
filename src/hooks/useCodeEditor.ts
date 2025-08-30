@@ -1,51 +1,51 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { GnuplotExample } from '@/data/examples';
 
-interface UseCodeEditorProps {
-  addDebug: (message: string) => void;
-}
+export type InputTab = 'code' | 'data';
 
-interface CodeEditorState {
-  code: string;
-  data: string;
-  activeTab: 'code' | 'data';
-}
+export const useCodeEditor = () => {
+  const [plotCode, setPlotCode] = useState(`set terminal svg enhanced size 800,600 background rgb 'white'
+set output 'plot.svg'
+set title 'Hola Física UB :)'
+set xlabel 'x'
+set ylabel 'y'
+set grid
+set key left top
+set samples 500
+plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc(x)'`);
+  
+  const [dataContent, setDataContent] = useState<string>(`# Fitxer de dades buit`);
+  const [activeTab, setActiveTab] = useState<InputTab>('code');
+  const [selectedExample, setSelectedExample] = useState<GnuplotExample | null>(null);
 
-export function useCodeEditor({ addDebug }: UseCodeEditorProps) {
-  const [editorState, setEditorState] = useState<CodeEditorState>({
-    code: '',
-    data: '',
-    activeTab: 'code',
-  });
-
-  const setCode = useCallback((newCode: string) => {
-    setEditorState(prev => ({ ...prev, code: newCode }));
-  }, []);
-
-  const setData = useCallback((newData: string) => {
-    setEditorState(prev => ({ ...prev, data: newData }));
-  }, []);
-
-  const setActiveTab = useCallback((tab: 'code' | 'data') => {
-    setEditorState(prev => ({ ...prev, activeTab: tab }));
-  }, []);
-
-  const loadExample = useCallback((example: GnuplotExample) => {
-    addDebug(`Loading example: ${example.title}`);
-    setEditorState(prev => ({
-      ...prev,
-      code: example.code,
-      data: example.data || '',
-      // If example has data, switch to code tab regardless of current tab
-      activeTab: prev.activeTab,
-    }));
-  }, [addDebug]);
+  const loadExample = (example: GnuplotExample, addDebug: (message: string) => void, onLoad?: () => void) => {
+    setPlotCode(example.code);
+    
+    // Set data content if available, otherwise keep current data
+    if (example.data) {
+      setDataContent(example.data);
+      addDebug(`Loaded data for example: ${example.title}`);
+    }
+    
+    setSelectedExample(example);
+    addDebug(`Loaded example: ${example.title}`);
+    
+    // Call onLoad callback if provided
+    if (onLoad) {
+      setTimeout(onLoad, 100);
+    }
+  };
 
   return {
-    ...editorState,
-    setCode,
-    setData,
+    plotCode,
+    setPlotCode,
+    dataContent,
+    setDataContent,
+    activeTab,
     setActiveTab,
-    loadExample,
+    selectedExample,
+    loadExample
   };
-}
+};
+
+export default useCodeEditor;

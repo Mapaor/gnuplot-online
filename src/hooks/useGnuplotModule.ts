@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { loadGnuplotModule, GnuplotModule } from '@/lib/gnuplot-loader';
 
-export function useGnuplotModule(addDebug: (message: string) => void) {
+export const useGnuplotModule = (addDebug: (message: string) => void) => {
   const [gnuplotModule, setGnuplotModule] = useState<GnuplotModule | null>(null);
 
   useEffect(() => {
@@ -48,4 +48,6 @@ export function useGnuplotModule(addDebug: (message: string) => void) {
   }, [addDebug]);
 
   return gnuplotModule;
-}
+};
+
+export default useGnuplotModule;

@@ -5,7 +5,7 @@ export interface DebugMessage {
   message: string;
 }
 
-export function useDebugLog() {
+export const useDebugLog = () => {
   const [debugMessages, setDebugMessages] = useState<DebugMessage[]>([]);
 
   const addDebug = useCallback((message: string) => {
@@ -22,4 +22,6 @@ export function useDebugLog() {
     addDebug,
     clearDebug
   };
-}
+};
+
+export default useDebugLog;
