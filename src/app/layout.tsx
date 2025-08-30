@@ -1,34 +1,34 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "Gnuplot Web Compiler - Create Beautiful Plots in Your Browser",
-  description: "A modern web-based Gnuplot compiler and visualization tool. Create beautiful plots, charts, and graphs directly in your browser using WebAssembly. No installation required - powered by Next.js, React, and TypeScript.",
-  keywords: ["gnuplot", "plotting", "visualization", "charts", "graphs", "webassembly", "browser", "online", "compiler"],
-  authors: [{ name: "Gnuplot Web Compiler Team" }],
-  creator: "Gnuplot Web Compiler",
-  publisher: "Gnuplot Web Compiler",
+  title: "Gnuplot Online",
+  description: "Compilador en línia de Gnuplot. Galeria d'exemples. Tot en temps real. Fet amb WebAssembly.",
+  keywords: ["gnuplot", "gràfics", "visualització", "diagrames", "webassembly", "navegador", "en línia", "compilador"],
+  authors: [{ name: "Mapaor" }],
+  creator: "Gnuplot Online",
+  publisher: "Gnuplot Online",
   openGraph: {
-    title: "Gnuplot Web Compiler",
-    description: "Create beautiful plots and visualizations with Gnuplot in your browser",
+    title: "Gnuplot Online",
+    description: "Compilador en línia de Gnuplot. Galeria d'exemples. Tot en temps real. Fet amb WebAssembly.",
     type: "website",
-    locale: "en_US",
+    locale: "ca_ES",
+    url: "https://gnuplot-online.vercel.app",
+    images: [
+      {
+        url: "/banner-gnuplot.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Banner Gnuplot Online"
+      }
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Gnuplot Web Compiler",
-    description: "Create beautiful plots and visualizations with Gnuplot in your browser",
+    title: "Gnuplot Online",
+    description: "Compilador en línia de Gnuplot. Galeria d'exemples. Tot en temps real. Fet amb WebAssembly.",
+    images: ["/banner-gnuplot.jpg"],
+    site: "https://gnuplot-online.vercel.app"
   },
   robots: {
     index: true,
@@ -43,8 +43,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="ca">
+      <body>
         {children}
       </body>
     </html>
