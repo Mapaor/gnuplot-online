@@ -1,9 +1,9 @@
-import { RefactoredGnuplotDemo } from './components/gnuplotDemo';
+import { GnuplotDemo } from './components/gnuplotDemo';
 
 export default function Home() {
   return (
     <main>
-      <RefactoredGnuplotDemo />
+      <GnuplotDemo />
     </main>
   );
 }
