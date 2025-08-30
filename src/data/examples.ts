@@ -13,8 +13,8 @@ export const gnuplotExamples: GnuplotExample[] = [
     title: 'Basic Sine Wave',
     description: 'A simple sine wave plot demonstrating basic function plotting',
     category: 'Basic Functions',
-    code: `set terminal svg
-set output
+    code: `set terminal svg enhanced size 800,600 background rgb 'white'
+set output 'plot.svg'
 set title "Sine Wave"
 set xlabel "x"
 set ylabel "sin(x)"
@@ -26,8 +26,8 @@ plot sin(x) with lines title "sin(x)"`
     title: 'Polynomial Functions',
     description: 'Multiple polynomial functions on the same plot',
     category: 'Basic Functions',
-    code: `set terminal svg
-set output
+    code: `set terminal svg enhanced size 800,600 background rgb 'white'
+set output 'plot.svg'
 set title "Polynomial Functions"
 set xlabel "x"
 set ylabel "y"
@@ -40,8 +40,8 @@ plot x**2 title "x²", x**3 title "x³", x**4/4 title "x⁴/4"`
     title: 'Data Points with Lines',
     description: 'Plotting discrete data points with connecting lines',
     category: 'Data Visualization',
-    code: `set terminal svg
-set output
+    code: `set terminal svg enhanced size 800,600 background rgb 'white'
+set output 'plot.svg'
 set title "Sample Data"
 set xlabel "Time"
 set ylabel "Value"
@@ -63,8 +63,8 @@ e`
     title: 'Parametric Circle',
     description: 'A parametric plot creating a perfect circle',
     category: 'Parametric',
-    code: `set terminal svg
-set output
+    code: `set terminal svg enhanced size 800,600 background rgb 'white'
+set output 'plot.svg'
 set title "Parametric Circle"
 set parametric
 set trange [0:2*pi]
@@ -77,8 +77,8 @@ plot cos(t), sin(t) title "Circle"`
     title: 'Archimedean Spiral',
     description: 'A beautiful spiral using parametric equations',
     category: 'Parametric',
-    code: `set terminal svg
-set output
+    code: `set terminal svg enhanced size 800,600 background rgb 'white'
+set output 'plot.svg'
 set title "Archimedean Spiral"
 set parametric
 set trange [0:10*pi]
@@ -90,8 +90,8 @@ plot t*cos(t), t*sin(t) title "Spiral"`
     title: 'Trigonometric Functions',
     description: 'Common trigonometric functions comparison',
     category: 'Mathematical',
-    code: `set terminal svg
-set output
+    code: `set terminal svg enhanced size 800,600 background rgb 'white'
+set output 'plot.svg'
 set title "Trigonometric Functions"
 set xlabel "x (radians)"
 set ylabel "y"
@@ -104,8 +104,8 @@ plot sin(x) title "sin(x)", cos(x) title "cos(x)", tan(x) title "tan(x)"`
     title: 'Exponential and Logarithmic',
     description: 'Exponential growth and logarithmic functions',
     category: 'Mathematical',
-    code: `set terminal svg
-set output
+    code: `set terminal svg enhanced size 800,600 background rgb 'white'
+set output 'plot.svg'
 set title "Exponential and Logarithmic Functions"
 set xlabel "x"
 set ylabel "y"
@@ -118,8 +118,8 @@ plot exp(x) title "e^x", log(x) title "ln(x)", x title "x"`
     title: 'Normal Distribution',
     description: 'Gaussian/Normal distribution curve',
     category: 'Statistics',
-    code: `set terminal svg
-set output
+    code: `set terminal svg enhanced size 800,600 background rgb 'white'
+set output 'plot.svg'
 set title "Normal Distribution"
 set xlabel "x"
 set ylabel "Probability Density"
@@ -134,8 +134,8 @@ plot normal(x,0,1) title "μ=0, σ=1", normal(x,0,0.5) title "μ=0, σ=0.5", nor
     title: 'Bar Chart',
     description: 'Simple bar chart with discrete data',
     category: 'Charts',
-    code: `set terminal svg
-set output
+    code: `set terminal svg enhanced size 800,600 background rgb 'white'
+set output 'plot.svg'
 set title "Sample Bar Chart"
 set xlabel "Categories"
 set ylabel "Values"
@@ -157,8 +157,8 @@ e`
     title: '3D Surface Plot',
     description: 'Three-dimensional surface visualization',
     category: '3D Plots',
-    code: `set terminal svg
-set output
+    code: `set terminal svg enhanced size 800,600 background rgb 'white'
+set output 'plot.svg'
 set title "3D Surface Plot"
 set xlabel "X axis"
 set ylabel "Y axis"

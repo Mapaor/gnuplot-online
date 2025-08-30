@@ -3,6 +3,8 @@ export interface GnuplotModule {
   FS: {
     writeFile: (name: string, content: string) => void;
     readFile: (name: string, opts: { encoding: string }) => string;
+    unlink?: (path: string) => void;
+    readdir?: (path: string) => string[];
   };
   callMain: (args: string[]) => number;
 }

@@ -1,9 +1,9 @@
-import GnuplotDemo from "./components/GnuplotDemo";
+import EnhancedGnuplotDemo from './components/EnhancedGnuplotDemo';
 
 export default function Home() {
   return (
-    <div>
-      <GnuplotDemo></GnuplotDemo>
-    </div>
+    <main>
+      <EnhancedGnuplotDemo />
+    </main>
   );
 }
