@@ -18,6 +18,7 @@ const eslintConfig = [
       "out/**",
       "build/**",
       "next-env.d.ts",
+      "public/gnuplot.js", // Generated WebAssembly code - ignore linting
     ],
   },
 ];
