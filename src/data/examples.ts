@@ -5,6 +5,7 @@ export interface GnuplotExample {
   category: string;
   code: string;
   data?: string;
+  dataFile?: string;
   thumbnail?: string;
 }
 
@@ -225,46 +226,33 @@ plot "data.dat" using 1:2 with points pt 7 ps 1.5 title "Grup A",\\
   {
     id: 'data-file-heatmap',
     title: 'Mapa de calor (Heatmap)',
-    description: 'Visualitza una matriu de dades com un mapa de calor',
+    description: 'Visualitza una matriu de dades com un mapa de temperatura',
     category: 'Dades externes',
-    code: `set terminal svg enhanced size 800,600 background rgb 'white'
-set output 'plot.svg'
-set title "Mapa de calor"
-set xlabel "Eix X"
-set ylabel "Eix Y"
-unset key
-set view map
-set palette defined (0 "blue", 10 "green", 20 "yellow", 30 "red")
-set cblabel "Valor"
-set dgrid3d 30,30,2
-splot "data.dat" using 1:2:3 with pm3d`,
-    data: `# Dades per al mapa de calor
-# X Y Z (valor)
-1 1 5
-1 2 8
-1 3 12
-1 4 15
-1 5 10
-2 1 7
-2 2 14
-2 3 20
-2 4 18
-2 5 12
-3 1 10
-3 2 18
-3 3 25
-3 4 22
-3 5 15
-4 1 8
-4 2 15
-4 3 22
-4 4 28
-4 5 20
-5 1 6
-5 2 12
-5 3 18
-5 4 15
-5 5 10`
+    code: `file = "data.dat"
+set term svg enhanced size 1200, 800 font "Verdana, 18"
+set out "plot.svg"
+
+set title "Mapa de Temperatures final (estat estacionari)"
+set xlabel "x (cm)"
+set ylabel "y (cm)" 
+
+
+# Llegenda
+set key right top
+set key box opaque
+
+# Marcar els eixos x=0 i y=0
+set xzeroaxis
+set yzeroaxis
+
+# Rang mostrat
+# set xrange[0:32.5]
+# set yrange[0:16.5]
+
+unset ztics
+
+splot file index 0 using 1:2:3 with pm3d t"Mapa de temperatures - Sense fonts"`,
+    dataFile: 'dataFiles/heatmap.dat'
   }
 ];
 

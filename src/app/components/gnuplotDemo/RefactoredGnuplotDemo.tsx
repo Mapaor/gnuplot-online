@@ -39,8 +39,8 @@ const RefactoredGnuplotDemo: React.FC = () => {
   );
 
   // Handler for loading examples
-  const handleLoadExample = (example: GnuplotExample) => {
-    loadExample(example, addDebug, () => {
+  const handleLoadExample = async (example: GnuplotExample) => {
+    await loadExample(example, addDebug, () => {
       if (gnuplotModule) {
         generatePlot();
       }

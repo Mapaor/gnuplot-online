@@ -34,7 +34,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
             onChange={(value) => setPlotCode(value)}
             extensions={[gnuplotLanguage()]}
             theme={gnuplotEditorTheme}
-            placeholder="Enter your Gnuplot script here..."
+            placeholder="Posa el teu script Gnuplot aquí"
             basicSetup={{
               lineNumbers: false,
               highlightActiveLine: true,
@@ -66,7 +66,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
             onChange={(value) => setDataContent(value)}
             extensions={[dataLanguage()]}
             theme={gnuplotEditorTheme}
-            placeholder="Enter your data here..."
+            placeholder="Posa les teves dades aquí"
             basicSetup={{
               lineNumbers: false,
               highlightActiveLine: true,
@@ -84,11 +84,6 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
             <div className="text-xs text-gray-500">
               Nota: Aquestes dades es guarden en un fitxer anomenat &quot;data.dat&quot; que pots utilitzar en el codi gnuplot amb <code className="bg-gray-100 px-1 rounded">plot &quot;data.dat&quot;</code>.
             </div>
-            {/* {selectedExample?.data && (
-              <div className="text-xs text-green-600 italic">
-                * Les dades actuals provenen de l&apos;exemple &quot;{selectedExample.title}&quot;
-              </div>
-            )} */}
           </div>
         </>
       )}

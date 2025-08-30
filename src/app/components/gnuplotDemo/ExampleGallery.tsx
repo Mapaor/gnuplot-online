@@ -7,7 +7,7 @@ import { gnuplotExamples, categories, GnuplotExample } from '@/data/examples';
 interface ExampleGalleryProps {
   showGallery: boolean;
   setShowGallery: (show: boolean) => void;
-  loadExample: (example: GnuplotExample) => void;
+  loadExample: (example: GnuplotExample) => Promise<void>;
 }
 
 const ExampleGallery: React.FC<ExampleGalleryProps> = ({ 
@@ -87,7 +87,7 @@ const ExampleGallery: React.FC<ExampleGalleryProps> = ({
                   <div className="text-xs text-gray-500">
                     Clica per carregar l&apos;exemple
                   </div>
-                  {example.data && (
+                  {(example.data || example.dataFile) && (
                     <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
                       Inclou dades
                     </span>
