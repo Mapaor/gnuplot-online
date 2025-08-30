@@ -1,25 +1,70 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { GnuplotModule } from '@/lib/gnuplot-loader';
 
 interface OutputPanelProps {
   svgOutput: string;
   loading: boolean;
   gnuplotModule: GnuplotModule | null;
+  getShareableUrl?: () => string;
 }
 
 const OutputPanel: React.FC<OutputPanelProps> = ({ 
   svgOutput, 
   loading, 
-  gnuplotModule 
+  gnuplotModule,
+  getShareableUrl 
 }) => {
+  const [copyState, setCopyState] = useState<'idle' | 'copied'>('idle');
+
+  const handleCopyUrl = async () => {
+    if (!getShareableUrl) return;
+    
+    try {
+      const url = getShareableUrl();
+      await navigator.clipboard.writeText(url);
+      setCopyState('copied');
+      setTimeout(() => setCopyState('idle'), 1200);
+    } catch (error) {
+      console.error('Failed to copy URL:', error);
+      setCopyState('idle');
+    }
+  };
   return (
     <div className="bg-white rounded-lg shadow-lg">
       <div className="p-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
         <div className="flex items-center justify-between w-full">
           <h2 className="text-xl font-semibold text-gray-800">Plot</h2>
           <div className="flex items-center gap-2">
+            {/* Share Button */}
+            {getShareableUrl && (
+              <button
+                onClick={handleCopyUrl}
+                className={`text-sm px-3 mx-2 py-1 rounded-md transition-all duration-200 flex items-center gap-2 ${
+                  copyState === 'copied' 
+                    ? 'bg-teal-500 hover:bg-teal-600 text-white' 
+                    : 'bg-cyan-500 hover:bg-cyan-600 text-white'
+                }`}
+                title="Copy shareable URL to clipboard"
+              >
+                {copyState === 'copied' ? (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span>Fet</span>
+                  </>
+                ) : (
+                  <>
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                    <span>Copiar URL</span>
+                  </>
+                )}
+              </button>
+            )}
             <div className={`w-3 h-3 rounded-full ${gnuplotModule ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
             <span className="text-sm font-medium">
               {gnuplotModule ? 'Gnuplot' : 'Gnuplot...'}

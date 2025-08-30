@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { GnuplotExample } from '@/data/examples';
 import GnuplotHeader from './GnuplotHeader';
 import ExampleGallery from './ExampleGallery';
@@ -12,6 +12,7 @@ import useDebugLog from '@/hooks/useDebugLog';
 import useGnuplotModule from '@/hooks/useGnuplotModule';
 import useCodeEditor from '@/hooks/useCodeEditor';
 import usePlotGeneration from '@/hooks/usePlotGeneration';
+import useUrlParameters from '@/hooks/useUrlParameters';
 
 const RefactoredGnuplotDemo: React.FC = () => {
   // State for showing the example gallery
@@ -37,6 +38,25 @@ const RefactoredGnuplotDemo: React.FC = () => {
     dataContent,
     addDebug
   );
+
+  // URL parameter handling
+  const { updateUrl, getShareableUrl } = useUrlParameters(
+    plotCode,
+    dataContent,
+    activeTab,
+    setPlotCode,
+    setDataContent,
+    setActiveTab
+  );
+
+  // Update URL when code or data changes
+  useEffect(() => {
+    updateUrl({
+      code: plotCode,
+      data: dataContent,
+      tab: activeTab
+    });
+  }, [plotCode, dataContent, activeTab, updateUrl]);
 
   // Handler for loading examples
   const handleLoadExample = async (example: GnuplotExample) => {
@@ -83,6 +103,7 @@ const RefactoredGnuplotDemo: React.FC = () => {
             svgOutput={svgOutput}
             loading={loading}
             gnuplotModule={gnuplotModule}
+            getShareableUrl={getShareableUrl}
           />
         </div>
 
