@@ -1,4 +1,4 @@
-export { default as GnuplotDemo } from './GnuplotDemo';
+export { default as GnuplotDemo } from './GnuplotDemoWrapper';
 export { default as CodeEditor } from './CodeEditor';
 export { default as DebugConsole } from './DebugConsole';
 export { default as EditorTabs } from './EditorTabs';

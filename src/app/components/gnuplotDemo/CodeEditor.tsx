@@ -14,7 +14,7 @@ interface CodeEditorProps {
   dataContent: string;
   setPlotCode: (value: string) => void;
   setDataContent: (value: string) => void;
-  selectedExample: GnuplotExample | null;
+  selectedExample?: GnuplotExample | null; // Made optional since it's not used
 }
 
 const CodeEditor: React.FC<CodeEditorProps> = ({
@@ -23,7 +23,7 @@ const CodeEditor: React.FC<CodeEditorProps> = ({
   dataContent,
   setPlotCode,
   setDataContent,
-  selectedExample
+  // selectedExample - commented out since it's not used
 }) => {
   return (
     <>

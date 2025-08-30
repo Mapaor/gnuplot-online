@@ -25,6 +25,9 @@ export const useUrlParameters = (
 
   // Extract parameters from URL and update the editor on initial load
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     const encodedCode = searchParams.get('code');
     const encodedData = searchParams.get('data');
     const tab = searchParams.get('tab') as InputTab | null;
@@ -54,6 +57,9 @@ export const useUrlParameters = (
 
   // Function to update URL with current editor state
   const updateUrl = (params: GnuplotUrlParams) => {
+    // Only run on client side
+    if (typeof window === 'undefined') return;
+    
     const newParams = new URLSearchParams();
     
     if (params.code) {
@@ -74,6 +80,9 @@ export const useUrlParameters = (
 
   // Function to share current plot state
   const getShareableUrl = (): string => {
+    // Only run on client side
+    if (typeof window === 'undefined') return '';
+    
     const params = new URLSearchParams();
     params.set('code', encodeURIComponent(plotCode));
     params.set('data', encodeURIComponent(dataContent));
