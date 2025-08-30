@@ -102,9 +102,15 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
       addDebug('Gnuplot script written to virtual filesystem');
       addDebug(`Script content: ${plotCode.substring(0, 100)}...`);
 
-      // Execute gnuplot
-      const result = gnuplotModule.callMain(['script.gnuplot']);
-      addDebug(`Gnuplot execution completed with result: ${result}`);
+      // Execute gnuplot with error handling
+      let result: number;
+      try {
+        result = gnuplotModule.callMain(['script.gnuplot']);
+        addDebug(`Gnuplot execution completed with result: ${result}`);
+      } catch (execErr) {
+        addDebug(`Gnuplot execution error: ${execErr}`);
+        throw new Error(`Gnuplot execution failed: ${execErr}`);
+      }
 
       // List files to see what was created
       try {
@@ -130,6 +136,17 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
       } catch (readErr) {
         addDebug(`Could not read SVG output: ${readErr}`);
         setSvgOutput('<svg width="400" height="300"><text x="50" y="150" fill="red">Error reading plot output</text></svg>');
+      }
+
+      // Clean up temporary files
+      try {
+        if (gnuplotModule.FS.unlink) {
+          gnuplotModule.FS.unlink('script.gnuplot');
+          addDebug('Cleaned up script.gnuplot file');
+        }
+      } catch {
+        // File cleanup is optional
+        addDebug('Could not clean up script.gnuplot file (not critical)');
       }
     } catch (err) {
       addDebug(`Error generating plot: ${err}`);

@@ -48,8 +48,15 @@ export async function loadGnuplotModule(): Promise<(options: ModuleOptions) => P
       import Module from '/gnuplot.js';
       console.log('🔧 Script loaded Module:', Module);
       console.log('🔧 Module type:', typeof Module);
-      window.${globalVarName} = Module;
-      window.dispatchEvent(new CustomEvent('${globalVarName}_ready'));
+      
+      // Ensure we don't accidentally set any deprecated properties
+      if (typeof Module === 'function') {
+        window.${globalVarName} = Module;
+        window.dispatchEvent(new CustomEvent('${globalVarName}_ready'));
+      } else {
+        console.error('🔧 Loaded module is not a function:', Module);
+        window.dispatchEvent(new CustomEvent('${globalVarName}_error'));
+      }
     `;
     
     // Listen for the ready event
@@ -67,12 +74,17 @@ export async function loadGnuplotModule(): Promise<(options: ModuleOptions) => P
         reject(new Error('Module not found in global variable'));
       }
     };
-    
+
+    const handleError = () => {
+      console.log('🔧 Module error event received');
+      reject(new Error('Module failed to load properly'));
+    };
+
     window.addEventListener(`${globalVarName}_ready`, handleReady, { once: true });
-    
-    // Set timeout
+    window.addEventListener(`${globalVarName}_error`, handleError, { once: true });    // Set timeout
     setTimeout(() => {
       window.removeEventListener(`${globalVarName}_ready`, handleReady);
+      window.removeEventListener(`${globalVarName}_error`, handleError);
       reject(new Error('Timeout waiting for module to load'));
     }, 10000);
     
