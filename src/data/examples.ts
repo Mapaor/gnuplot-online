@@ -10,9 +10,9 @@ export interface GnuplotExample {
 export const gnuplotExamples: GnuplotExample[] = [
   {
     id: 'basic-sine',
-    title: 'Basic Sine Wave',
-    description: 'A simple sine wave plot demonstrating basic function plotting',
-    category: 'Basic Functions',
+    title: 'Funció sin(x)',
+    description: 'Un gràfic senzill d’una ona sinusoidal que mostra la representació de funcions bàsiques',
+  category: 'Funcions bàsiques',
     code: `set terminal svg enhanced size 800,600 background rgb 'white'
 set output 'plot.svg'
 set title "Sine Wave"
@@ -23,9 +23,9 @@ plot sin(x) with lines title "sin(x)"`
   },
   {
     id: 'polynomial',
-    title: 'Polynomial Functions',
-    description: 'Multiple polynomial functions on the same plot',
-    category: 'Basic Functions',
+    title: 'Funcions Polinomials',
+    description: 'Diverses funcions polinomials en el mateix gràfic',
+  category: 'Funcions bàsiques',
     code: `set terminal svg enhanced size 800,600 background rgb 'white'
 set output 'plot.svg'
 set title "Polynomial Functions"
@@ -37,9 +37,9 @@ plot x**2 title "x²", x**3 title "x³", x**4/4 title "x⁴/4"`
   },
   {
     id: 'data-points',
-    title: 'Data Points with Lines',
-    description: 'Plotting discrete data points with connecting lines',
-    category: 'Data Visualization',
+    title: 'Punts de Dades amb Línies',
+    description: 'Representació de punts de dades discrets amb línies de connexió',
+  category: 'Visualització de dades',
     code: `set terminal svg enhanced size 800,600 background rgb 'white'
 set output 'plot.svg'
 set title "Sample Data"
@@ -60,9 +60,9 @@ e`
   },
   {
     id: 'parametric',
-    title: 'Parametric Circle',
-    description: 'A parametric plot creating a perfect circle',
-    category: 'Parametric',
+    title: 'Cercle Paramètric',
+    description: 'Un gràfic paramètric que genera un cercle perfecte',
+  category: 'Paramètric',
     code: `set terminal svg enhanced size 800,600 background rgb 'white'
 set output 'plot.svg'
 set title "Parametric Circle"
@@ -74,9 +74,9 @@ plot cos(t), sin(t) title "Circle"`
   },
   {
     id: 'spiral',
-    title: 'Archimedean Spiral',
-    description: 'A beautiful spiral using parametric equations',
-    category: 'Parametric',
+    title: 'Espiral d’Arquimedes',
+    description: 'Una espiral atractiva utilitzant equacions paramètriques',
+  category: 'Paramètric',
     code: `set terminal svg enhanced size 800,600 background rgb 'white'
 set output 'plot.svg'
 set title "Archimedean Spiral"
@@ -87,9 +87,9 @@ plot t*cos(t), t*sin(t) title "Spiral"`
   },
   {
     id: 'trigonometric',
-    title: 'Trigonometric Functions',
-    description: 'Common trigonometric functions comparison',
-    category: 'Mathematical',
+    title: 'Funcions Trigonomètriques',
+    description: 'Comparació de funcions trigonomètriques comunes',
+  category: 'Matemàtiques',
     code: `set terminal svg enhanced size 800,600 background rgb 'white'
 set output 'plot.svg'
 set title "Trigonometric Functions"
@@ -101,9 +101,9 @@ plot sin(x) title "sin(x)", cos(x) title "cos(x)", tan(x) title "tan(x)"`
   },
   {
     id: 'exponential',
-    title: 'Exponential and Logarithmic',
-    description: 'Exponential growth and logarithmic functions',
-    category: 'Mathematical',
+    title: 'Exponencial i Logarítmica',
+    description: 'Creixement exponencial i funcions logarítmiques',
+  category: 'Matemàtiques',
     code: `set terminal svg enhanced size 800,600 background rgb 'white'
 set output 'plot.svg'
 set title "Exponential and Logarithmic Functions"
@@ -115,9 +115,9 @@ plot exp(x) title "e^x", log(x) title "ln(x)", x title "x"`
   },
   {
     id: 'statistics',
-    title: 'Normal Distribution',
-    description: 'Gaussian/Normal distribution curve',
-    category: 'Statistics',
+    title: 'Distribució Normal',
+    description: 'Corba de distribució normal o gaussiana',
+  category: 'Estadística',
     code: `set terminal svg enhanced size 800,600 background rgb 'white'
 set output 'plot.svg'
 set title "Normal Distribution"
@@ -131,9 +131,9 @@ plot normal(x,0,1) title "μ=0, σ=1", normal(x,0,0.5) title "μ=0, σ=0.5", nor
   },
   {
     id: 'bar-chart',
-    title: 'Bar Chart',
-    description: 'Simple bar chart with discrete data',
-    category: 'Charts',
+    title: 'Diagrama de Barres',
+    description: 'Diagrama de barres senzill amb dades discretes',
+  category: 'Diagrames',
     code: `set terminal svg enhanced size 800,600 background rgb 'white'
 set output 'plot.svg'
 set title "Sample Bar Chart"
@@ -154,9 +154,9 @@ e`
   },
   {
     id: 'surface-3d',
-    title: '3D Surface Plot',
-    description: 'Three-dimensional surface visualization',
-    category: '3D Plots',
+    title: 'Gràfic de Superfície 3D',
+    description: 'Visualització tridimensional de superfícies',
+  category: 'Gràfics 3D',
     code: `set terminal svg enhanced size 800,600 background rgb 'white'
 set output 'plot.svg'
 set title "3D Surface Plot"

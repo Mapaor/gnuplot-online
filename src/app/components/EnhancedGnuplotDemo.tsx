@@ -12,9 +12,9 @@ interface DebugMessage {
 export default function GnuplotDemo() {
   const [gnuplotModule, setGnuplotModule] = useState<GnuplotModule | null>(null);
   const [loading, setLoading] = useState(false);
-  const [plotCode, setPlotCode] = useState(`set terminal svg enhanced size 800,600 background rgb 'white'
+  const [plotCode, setPlotCode] = useState(`set terminal svg enhanced size 800,400 background rgb 'white'
 set output 'plot.svg'
-set title 'Welcome to Gnuplot Web Compiler!'
+set title 'Hola Física UB :)'
 set xlabel 'x'
 set ylabel 'y'
 set grid
@@ -195,45 +195,30 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
         {/* Header */}
         <header className="text-center mb-8">
           <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-            Gnuplot Web Compiler
+            Gnuplot Online
           </h1>
           <p className="text-xl text-gray-600 mb-2">
-            Create beautiful plots and visualizations with Gnuplot in your browser
+            Galeria d&apos;exemples de gràfics que es poden generar amb Gnuplot
           </p>
           <p className="text-sm text-gray-500">
-            Powered by WebAssembly • No installation required • Real-time plotting
+            Fet amb WebAssembly, els exemples són editables, es grafica en temps real.
           </p>
         </header>
 
-        {/* Status Bar */}
+        {/*Example gallery show button*/}
         <div className="bg-white rounded-lg shadow-md p-4 mb-6">
-          <div className="flex items-center justify-between flex-wrap gap-4">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <div className={`w-3 h-3 rounded-full ${gnuplotModule ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
-                <span className="text-sm font-medium">
-                  {gnuplotModule ? 'Gnuplot Ready • Auto-generating plots' : 'Loading Gnuplot...'}
-                </span>
-              </div>
-              {loading && (
-                <div className="flex items-center gap-2 text-blue-600">
-                  <div className="w-3 h-3 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-                  <span className="text-sm font-medium">Generating plot...</span>
-                </div>
-              )}
-              {selectedExample && (
-                <div className="text-sm text-gray-600">
-                  Current: <span className="font-medium text-blue-600">{selectedExample.title}</span>
-                </div>
-              )}
-            </div>
-            
+          <div className="flex items-center justify-between flex-wrap gap-4">            
             <div className="flex gap-3">
               <button
                 onClick={() => setShowGallery(!showGallery)}
-                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
               >
-                {showGallery ? '✕ Hide Gallery' : '🎨 Show Examples'}
+                {showGallery ? '✕ Amaga la galeria' : (
+                  <span className="inline-flex items-center gap-1">
+                    <img src="https://cdn.jsdelivr.net/gh/mapaor/tw-emojis/tw-emojis-svgs/1f5c2.svg" alt="Showcase" width="20" height="20" className="inline-block align-middle mr-1" />
+                    Exemples de la galeria
+                  </span>
+                )}
               </button>
             </div>
           </div>
@@ -243,13 +228,13 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
         {showGallery && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-bold text-gray-800">📊 Example Gallery</h2>
+              <h2 className="text-2xl font-bold text-gray-800">Galeria d&apos;exemples</h2>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
                 className="border border-gray-300 rounded-lg px-3 py-2 bg-white text-sm"
               >
-                <option value="All">All Categories ({gnuplotExamples.length})</option>
+                <option value="All">Totes les categories ({gnuplotExamples.length})</option>
                 {categories.map(cat => (
                   <option key={cat} value={cat}>
                     {cat} ({gnuplotExamples.filter(ex => ex.category === cat).length})
@@ -275,7 +260,7 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
                   </div>
                   <p className="text-sm text-gray-600 mb-3">{example.description}</p>
                   <div className="text-xs text-gray-500">
-                    Click to load this example
+                    Clica per carregar l&apos;exemple
                   </div>
                 </div>
               ))}
@@ -289,11 +274,11 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
           <div className="bg-white rounded-lg shadow-lg">
             <div className="p-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
               <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                📝 Gnuplot Script
+                Input
               </h2>
               {selectedExample && (
                 <p className="text-sm text-gray-600 mt-1">
-                  Editing: <span className="font-medium text-blue-600">{selectedExample.title}</span>
+                  Exemple: <span className="font-medium text-blue-600">{selectedExample.title}</span>
                   <span className="text-gray-400 ml-2">({selectedExample.category})</span>
                 </p>
               )}
@@ -307,7 +292,7 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
                 spellCheck={false}
               />
               <div className="mt-3 text-xs text-gray-500">
-                💡 Tip: Use &apos;set terminal svg&apos; and &apos;set output&apos; for best results • Plots generate automatically as you type
+                Nota: El &quot;set terminal svg&quot; i &quot;set output &apos;plot.svg&apos;&quot; s&apos;han de posar sempre.
               </div>
             </div>
           </div>
@@ -315,9 +300,15 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
           {/* Output Panel */}
           <div className="bg-white rounded-lg shadow-lg">
             <div className="p-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
-              <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                📈 Plot Output
-              </h2>
+              <div className="flex items-center justify-between w-full">
+                <h2 className="text-xl font-semibold text-gray-800">Plot</h2>
+                <div className="flex items-center gap-2">
+                  <div className={`w-3 h-3 rounded-full ${gnuplotModule ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`}></div>
+                  <span className="text-sm font-medium">
+                    {gnuplotModule ? 'Gnuplot' : 'Gnuplot...'}
+                  </span>
+                </div>
+              </div>
             </div>
             <div className="p-4">
               <div className="border border-gray-300 rounded-lg h-80 overflow-auto bg-gray-50 flex items-center justify-center">
@@ -333,7 +324,7 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
                   />
                 ) : (
                   <div className="text-center text-gray-500">
-                    <div className="text-4xl mb-2">📊</div>
+                    <div className="text-4xl mb-2"></div>
                     <p>{gnuplotModule ? 'Edit the script to generate your plot automatically' : 'Loading Gnuplot module...'}</p>
                   </div>
                 )}
@@ -347,20 +338,20 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
           <div className="p-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                🔧 Debug Console
+                Logs del compilador
               </h2>
               <button
                 onClick={clearDebug}
                 className="text-sm bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded transition-colors"
               >
-                Clear
+                Esborrar
               </button>
             </div>
           </div>
           <div className="p-4">
             <div className="bg-gray-900 text-green-400 p-3 rounded-lg h-32 overflow-y-auto font-mono text-xs">
               {debugMessages.length === 0 ? (
-                <div className="text-gray-500">Debug messages will appear here...</div>
+                <div className="text-gray-500">Els missatges de debugging apareixaran aquí</div>
               ) : (
                 debugMessages.map((msg, index) => (
                   <div key={index} className="mb-1">
@@ -375,7 +366,7 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
         {/* Footer */}
         <footer className="mt-8 text-center text-sm text-gray-500">
           <p>
-            Built with ❤️ using Gnuplot WebAssembly, Next.js, React, and Tailwind CSS
+            <a href="https://github.com/Mapaor/gnuplot-online" target='blank' className='underline'>gnuplot-online</a>: WebAssembly, Next.js, React i Tailwind CSS.
           </p>
         </footer>
       </div>
