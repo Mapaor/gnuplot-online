@@ -12,7 +12,7 @@ interface DebugMessage {
 export default function GnuplotDemo() {
   const [gnuplotModule, setGnuplotModule] = useState<GnuplotModule | null>(null);
   const [loading, setLoading] = useState(false);
-  const [plotCode, setPlotCode] = useState(`set terminal svg enhanced size 800,400 background rgb 'white'
+  const [plotCode, setPlotCode] = useState(`set terminal svg enhanced size 800,600 background rgb 'white'
 set output 'plot.svg'
 set title 'Hola Física UB :)'
 set xlabel 'x'
@@ -276,18 +276,18 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
               <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
                 Input
               </h2>
-              {selectedExample && (
+              {/* {selectedExample && (
                 <p className="text-sm text-gray-600 mt-1">
                   Exemple: <span className="font-medium text-blue-600">{selectedExample.title}</span>
                   <span className="text-gray-400 ml-2">({selectedExample.category})</span>
                 </p>
-              )}
+              )} */}
             </div>
             <div className="p-4">
               <textarea
                 value={plotCode}
                 onChange={(e) => setPlotCode(e.target.value)}
-                className="w-full h-80 p-3 border border-gray-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                className="w-full h-[24rem] p-3 border border-gray-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
                 placeholder="Enter your Gnuplot script here..."
                 spellCheck={false}
               />
@@ -311,17 +311,32 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
               </div>
             </div>
             <div className="p-4">
-              <div className="border border-gray-300 rounded-lg h-80 overflow-auto bg-gray-50 flex items-center justify-center">
+              <div className="border border-gray-300 rounded-lg min-h-[20rem] max-h-[28rem] bg-gray-50 flex items-center justify-center overflow-y-auto">
                 {loading ? (
                   <div className="text-center">
                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
                     <p className="text-gray-600">Generating plot...</p>
                   </div>
                 ) : svgOutput ? (
-                  <div 
-                    className="w-full h-full flex items-center justify-center"
-                    dangerouslySetInnerHTML={{ __html: svgOutput }}
-                  />
+                  <div className="w-full h-full flex items-center justify-center">
+                    {/* Responsive SVG rendering: inject a wrapper and style the SVG */}
+                    <div
+                      style={{ width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                      ref={el => {
+                        if (el && svgOutput) {
+                          el.innerHTML = svgOutput;
+                          const svg = el.querySelector('svg');
+                          if (svg) {
+                            svg.style.width = '100%';
+                            svg.style.height = '100%';
+                            svg.style.maxHeight = '27rem';
+                            svg.style.objectFit = 'contain';
+                            svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+                          }
+                        }
+                      }}
+                    />
+                  </div>
                 ) : (
                   <div className="text-center text-gray-500">
                     <div className="text-4xl mb-2"></div>
