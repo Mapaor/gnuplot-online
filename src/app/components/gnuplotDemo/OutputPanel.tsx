@@ -28,7 +28,56 @@ const OutputPanel: React.FC<OutputPanelProps> = ({
         </div>
       </div>
       <div className="p-4">
-        <div className="border border-gray-300 rounded-lg min-h-[20rem] max-h-[28rem] bg-gray-50 flex items-center justify-center overflow-y-auto">
+        <div 
+          className="border border-gray-300 rounded-lg min-h-[20rem] max-h-[28rem] bg-gray-50 flex items-center justify-center overflow-y-auto relative group"
+        >
+          {/* Download button */}
+          {svgOutput && !loading && (
+            <>
+              {/* Desktop button - only shown on hover on larger screens */}
+              <button 
+                onClick={() => {
+                  const blob = new Blob([svgOutput], { type: 'image/svg+xml' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'gnuplot-output.svg';
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                }}
+                className={`absolute top-2 right-2 bg-gray-700 text-white p-1.5 rounded-md shadow-sm z-10 items-center transition-opacity ease-in-out duration-300 cursor-pointer
+                  hidden md:flex md:opacity-0 group-hover:opacity-60 hover:opacity-80`}
+                title="Download SVG"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              </button>
+              
+              {/* Mobile button - always shown on small screens */}
+              <button 
+                onClick={() => {
+                  const blob = new Blob([svgOutput], { type: 'image/svg+xml' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'gnuplot-output.svg';
+                  document.body.appendChild(a);
+                  a.click();
+                  document.body.removeChild(a);
+                  URL.revokeObjectURL(url);
+                }}
+                className="absolute top-2 right-2 bg-gray-700 text-white p-1.5 rounded-md shadow-sm z-10 flex items-center opacity-60 hover:opacity-80 transition-all ease-in-out duration-200 cursor-pointer md:hidden"
+                title="Download SVG"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              </button>
+            </>
+          )}
           {loading ? (
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
