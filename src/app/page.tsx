@@ -1,4 +1,4 @@
-import EnhancedGnuplotDemo from './components/EnhancedGnuplotDemo';
+import EnhancedGnuplotDemo from "../app/components/EnhancedGnuplotDemo"
 
 export default function Home() {
   return (

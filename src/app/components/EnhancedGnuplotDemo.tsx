@@ -1,11 +1,15 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import Image from 'next/image';
 import CodeMirror from '@uiw/react-codemirror';
 import { loadGnuplotModule, GnuplotModule } from '@/lib/gnuplot-loader';
 import { gnuplotExamples, categories, GnuplotExample } from '@/data/examples';
 import { gnuplotLanguage } from '@/lib/gnuplot-language';
+import { dataLanguage } from '@/lib/data-language';
 import { gnuplotEditorTheme } from '@/lib/gnuplot-theme';
+
+type InputTab = 'code' | 'data';
 
 interface DebugMessage {
   timestamp: string;
@@ -29,6 +33,8 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedExample, setSelectedExample] = useState<GnuplotExample | null>(null);
   const [showGallery, setShowGallery] = useState(false);
+  const [activeTab, setActiveTab] = useState<InputTab>('code');
+  const [dataContent, setDataContent] = useState<string>(`# Fitxer de dades buit`);
 
   const addDebug = useCallback((message: string) => {
     const timestamp = new Date().toLocaleTimeString();
@@ -100,6 +106,10 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
         addDebug('No previous plot.svg file to clear');
       }
 
+      // Write the data content to a file
+      gnuplotModule.FS.writeFile('data.dat', dataContent);
+      addDebug('Data content written to data.dat in virtual filesystem');
+
       // Write the gnuplot script to a file
       gnuplotModule.FS.writeFile('script.gnuplot', plotCode);
       addDebug('Gnuplot script written to virtual filesystem');
@@ -146,10 +156,12 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
         if (gnuplotModule.FS.unlink) {
           gnuplotModule.FS.unlink('script.gnuplot');
           addDebug('Cleaned up script.gnuplot file');
+          gnuplotModule.FS.unlink('data.dat');
+          addDebug('Cleaned up data.dat file');
         }
       } catch {
         // File cleanup is optional
-        addDebug('Could not clean up script.gnuplot file (not critical)');
+        addDebug('Could not clean up temporary files (not critical)');
       }
     } catch (err) {
       addDebug(`Error generating plot: ${err}`);
@@ -158,10 +170,15 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
     } finally {
       setLoading(false);
     }
-  }, [gnuplotModule, plotCode, addDebug]);
+  }, [gnuplotModule, plotCode, dataContent, addDebug]);
 
   const loadExample = (example: GnuplotExample) => {
     setPlotCode(example.code);
+    // Set data content if available, otherwise keep current data
+    if (example.data) {
+      setDataContent(example.data);
+      addDebug(`Loaded data for example: ${example.title}`);
+    }
     setSelectedExample(example);
     setShowGallery(false);
     addDebug(`Loaded example: ${example.title}`);
@@ -173,7 +190,7 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
     }, 100);
   };
 
-  // Auto-generate plot when gnuplotModule loads or plotCode changes
+  // Auto-generate plot when gnuplotModule loads or plotCode/dataContent changes
   useEffect(() => {
     if (gnuplotModule && plotCode.trim()) {
       const timeoutId = setTimeout(() => {
@@ -182,7 +199,7 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
       
       return () => clearTimeout(timeoutId);
     }
-  }, [gnuplotModule, plotCode, generatePlot]);
+  }, [gnuplotModule, plotCode, dataContent, generatePlot]);
 
   const clearDebug = () => {
     setDebugMessages([]);
@@ -190,7 +207,7 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
 
   const filteredExamples = selectedCategory === 'All' 
     ? gnuplotExamples 
-    : gnuplotExamples.filter(ex => ex.category === selectedCategory);
+    : gnuplotExamples.filter((ex: GnuplotExample) => ex.category === selectedCategory);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -218,7 +235,13 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
               >
                 {showGallery ? '✕ Amaga la galeria' : (
                   <span className="inline-flex items-center gap-1">
-                    <img src="https://cdn.jsdelivr.net/gh/mapaor/tw-emojis/tw-emojis-svgs/1f5c2.svg" alt="Showcase" width="20" height="20" className="inline-block align-middle mr-1" />
+                    <Image 
+                      src="https://cdn.jsdelivr.net/gh/mapaor/tw-emojis/tw-emojis-svgs/1f5c2.svg" 
+                      alt="Showcase" 
+                      width={20} 
+                      height={20} 
+                      className="inline-block align-middle mr-1" 
+                    />
                     Exemples de la galeria
                   </span>
                 )}
@@ -238,16 +261,16 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
                 className="border border-gray-300 rounded-lg px-3 py-2 bg-white text-sm"
               >
                 <option value="All">Totes les categories ({gnuplotExamples.length})</option>
-                {categories.map(cat => (
+                {categories.map((cat: string) => (
                   <option key={cat} value={cat}>
-                    {cat} ({gnuplotExamples.filter(ex => ex.category === cat).length})
+                    {cat} ({gnuplotExamples.filter((ex: GnuplotExample) => ex.category === cat).length})
                   </option>
                 ))}
               </select>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredExamples.map(example => (
+              {filteredExamples.map((example: GnuplotExample) => (
                 <div
                   key={example.id}
                   className="border border-gray-200 rounded-lg p-4 hover:shadow-md hover:border-blue-300 transition-all cursor-pointer group"
@@ -262,8 +285,15 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 mb-3">{example.description}</p>
-                  <div className="text-xs text-gray-500">
-                    Clica per carregar l&apos;exemple
+                  <div className="flex justify-between items-center">
+                    <div className="text-xs text-gray-500">
+                      Clica per carregar l&apos;exemple
+                    </div>
+                    {example.data && (
+                      <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                        Inclou dades
+                      </span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -276,33 +306,100 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
           {/* Input Panel */}
           <div className="bg-white rounded-lg shadow-lg">
             <div className="p-4 border-b border-gray-200 bg-gray-50 rounded-t-lg">
-              <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
-                Input
-              </h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+                  Input
+                </h2>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => setActiveTab('code')}
+                    className={`px-4 py-1 text-sm font-medium rounded-md transition-colors ${
+                      activeTab === 'code'
+                        ? 'bg-purple-100 text-purple-700'
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    Codi
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('data')}
+                    className={`px-4 py-1 text-sm font-medium rounded-md transition-colors ${
+                      activeTab === 'data'
+                        ? 'bg-purple-100 text-purple-700'
+                        : 'text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    Dades
+                  </button>
+                </div>
+              </div>
             </div>
             <div className="p-4">
-              <CodeMirror
-                value={plotCode}
-                onChange={(value) => setPlotCode(value)}
-                extensions={[gnuplotLanguage()]}
-                theme={gnuplotEditorTheme}
-                placeholder="Enter your Gnuplot script here..."
-                basicSetup={{
-                  lineNumbers: false,
-                  highlightActiveLine: true,
-                  highlightActiveLineGutter: true,
-                  foldGutter: false,
-                  dropCursor: true,
-                  allowMultipleSelections: true,
-                  indentOnInput: true,
-                  bracketMatching: true,
-                  closeBrackets: true,
-                  autocompletion: true
-                }}
-              />
-              <div className="mt-3 text-xs text-gray-500">
-                Nota: El &quot;set terminal svg&quot; i &quot;set output &apos;plot.svg&apos;&quot; s&apos;han de posar sempre.
-              </div>
+              {activeTab === 'code' ? (
+                <>
+                  <CodeMirror
+                    value={plotCode}
+                    onChange={(value) => setPlotCode(value)}
+                    extensions={[gnuplotLanguage()]}
+                    theme={gnuplotEditorTheme}
+                    placeholder="Enter your Gnuplot script here..."
+                    basicSetup={{
+                      lineNumbers: false,
+                      highlightActiveLine: true,
+                      highlightActiveLineGutter: true,
+                      foldGutter: false,
+                      dropCursor: true,
+                      allowMultipleSelections: true,
+                      indentOnInput: true,
+                      bracketMatching: true,
+                      closeBrackets: true,
+                      autocompletion: true
+                    }}
+                  />
+                  <div className="mt-3 flex flex-col gap-1">
+                    <div className="text-xs text-gray-500">
+                      Nota: El &quot;set terminal svg&quot; i &quot;set output &apos;plot.svg&apos;&quot; s&apos;han de posar sempre.
+                    </div>
+                    {selectedExample?.data && (
+                      <div className="text-xs text-green-600 italic">
+                        * Aquest exemple utilitza dades externes. Pots veure-les a la pestanya &quot;Data&quot;.
+                      </div>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <CodeMirror
+                    value={dataContent}
+                    onChange={(value) => setDataContent(value)}
+                    extensions={[dataLanguage()]}
+                    theme={gnuplotEditorTheme}
+                    placeholder="Enter your data here..."
+                    basicSetup={{
+                      lineNumbers: false,
+                      highlightActiveLine: true,
+                      highlightActiveLineGutter: true,
+                      foldGutter: false,
+                      dropCursor: true,
+                      allowMultipleSelections: true,
+                      indentOnInput: true,
+                      bracketMatching: true,
+                      closeBrackets: true,
+                      autocompletion: false
+                    }}
+                  />
+                  <div className="mt-3 flex flex-col gap-1">
+                    <div className="text-xs text-gray-500">
+                      Nota: Aquestes dades es guarden en un fitxer anomenat &quot;data.dat&quot; que pots utilitzar en el codi gnuplot amb <code className="bg-gray-100 px-1 rounded">plot &quot;data.dat&quot; using 1:2</code>
+                    </div>
+                    {selectedExample?.data && (
+                      <div className="text-xs text-green-600 italic">
+                        * Les dades actuals provenen de l&apos;exemple &quot;{selectedExample.title}&quot;
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           </div>
 
