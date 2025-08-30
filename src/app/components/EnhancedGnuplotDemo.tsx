@@ -1,8 +1,11 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import CodeMirror from '@uiw/react-codemirror';
 import { loadGnuplotModule, GnuplotModule } from '@/lib/gnuplot-loader';
 import { gnuplotExamples, categories, GnuplotExample } from '@/data/examples';
+import { gnuplotLanguage } from '@/lib/gnuplot-language';
+import { gnuplotEditorTheme } from '@/lib/gnuplot-theme';
 
 interface DebugMessage {
   timestamp: string;
@@ -227,7 +230,7 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
         {/* Example Gallery */}
         {showGallery && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 gap-2">
               <h2 className="text-2xl font-bold text-gray-800">Galeria d&apos;exemples</h2>
               <select
                 value={selectedCategory}
@@ -276,20 +279,26 @@ plot [-10:10] sin(x) title 'sin(x)', cos(x) title 'cos(x)', sin(x)/x title 'sinc
               <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
                 Input
               </h2>
-              {/* {selectedExample && (
-                <p className="text-sm text-gray-600 mt-1">
-                  Exemple: <span className="font-medium text-blue-600">{selectedExample.title}</span>
-                  <span className="text-gray-400 ml-2">({selectedExample.category})</span>
-                </p>
-              )} */}
             </div>
             <div className="p-4">
-              <textarea
+              <CodeMirror
                 value={plotCode}
-                onChange={(e) => setPlotCode(e.target.value)}
-                className="w-full h-[24rem] p-3 border border-gray-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                onChange={(value) => setPlotCode(value)}
+                extensions={[gnuplotLanguage()]}
+                theme={gnuplotEditorTheme}
                 placeholder="Enter your Gnuplot script here..."
-                spellCheck={false}
+                basicSetup={{
+                  lineNumbers: false,
+                  highlightActiveLine: true,
+                  highlightActiveLineGutter: true,
+                  foldGutter: false,
+                  dropCursor: true,
+                  allowMultipleSelections: true,
+                  indentOnInput: true,
+                  bracketMatching: true,
+                  closeBrackets: true,
+                  autocompletion: true
+                }}
               />
               <div className="mt-3 text-xs text-gray-500">
                 Nota: El &quot;set terminal svg&quot; i &quot;set output &apos;plot.svg&apos;&quot; s&apos;han de posar sempre.
