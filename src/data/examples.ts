@@ -253,6 +253,55 @@ unset ztics
 
 splot file index 0 using 1:2:3 with pm3d t"Mapa de temperatures - Sense fonts"`,
     dataFile: 'dataFiles/heatmap.dat'
+  },
+  {
+    id: 'monte-carlo-error',
+    title: 'Error en el mètode Monte Carlo',
+    description: 'Gràfic log-log de l\'error en funció de n per al mètode Monte Carlo, amb línia teòrica n^{-1/2}',
+    category: 'Dades externes',
+    code: `fitxer = "data.dat"
+
+set term svg enhanced size 1400, 900 font "Helvetica,18" background rgb "white"
+set out "plot.svg"
+
+# Títol
+set title "Error en el mètode Monte Carlo" \
+    font "Helvetica,22" textcolor rgb "black"
+
+# Etiquetes dels eixos
+set xlabel "log(n)" font "Helvetica,18"
+set ylabel "log({/Symbol e}_n)" font "Helvetica,18"
+
+# Escala logarítmica
+set logscale x
+set logscale y
+set format x "10^{%L}"
+set format y "10^{%L}"
+
+# Ticks i graella
+set xtics font "Helvetica,16"
+set ytics font "Helvetica,16"
+set grid xtics ytics lc rgb "gray80" lw 1
+set border lw 1.8 lc rgb "black"
+set tics nomirror out
+
+# Llegenda
+set key at graph 0.96,0.96 right top spacing 1.2
+set key opaque box lc rgb "gray60" lw 1.2
+set key font "Helvetica,16"
+
+# Línia teòrica (offset ajust manualment)
+A = 0.38
+
+plot \
+    fitxer i 0 u 1:3 w points pt 7 ps 1.6 lw 2 lc rgb "#1f77b4" t 'Valors de {/Symbol e}_n', \
+    A*x**(-0.5) w l lw 2 lc rgb "#d62728" dt 2 t 'Teoria: n^{-1/2}'`,
+    data: `# n | S_n | epsilon_n
+         512  0.477708757       1.58486348E-02
+        1024  0.501938105       1.20038083E-02
+        2048  0.499401957       8.26329831E-03
+        4096  0.484591663       6.21117605E-03
+        8192  0.499293566       4.25777957E-03`
   }
 ];
 
