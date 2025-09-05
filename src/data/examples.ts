@@ -116,6 +116,47 @@ set xrange [0.1:5]
 plot exp(x) title "e^x", log(x) title "ln(x)", x title "x"`
   },
   {
+  id: 'polar-rose',
+  title: 'Rosa Polar',
+  description: 'Una corba polar clàssica amb múltiples pètals',
+  category: 'Paramètric',
+  code: `set terminal svg enhanced size 600,600 background rgb 'white'
+set output 'plot.svg'
+set title "Rose Curve in Polar Coordinates"
+set polar
+set grid polar
+set angle degree
+set samples 500
+plot cos(5*t) with lines lw 2 lc rgb "purple" title "r = cos(5θ)"`
+},
+{
+  id: 'lissajous',
+  title: 'Corba de Lissajous',
+  description: 'Exemple d\'una corba de Lissajous paramètrica',
+  category: 'Paramètric',
+  code: `set terminal svg enhanced size 800,600 background rgb 'white'
+set output 'plot.svg'
+set title "Lissajous Curve"
+set parametric
+set trange [0:2*pi]
+set size square
+plot sin(3*t), sin(4*t) with lines lw 2 lc rgb "dark-green" title "x=sin(3t), y=sin(4t)"`
+},
+{
+  id: 'heatmap-simple',
+  title: 'Mapa de calor simple',
+  description: 'Mapa de calor generat a partir d\'una funció matemàtica',
+  category: 'Diagrames',
+  code: `set terminal svg enhanced size 800,600 background rgb 'white'
+set output 'plot.svg'
+set title "Heatmap of sin(x)*cos(y)"
+set view map
+unset surface
+set pm3d at b
+set palette rgb 33,13,10
+splot sin(x)*cos(y) notitle`
+},
+  {
     id: 'statistics',
     title: 'Distribució Normal',
     description: 'Corba de distribució normal o gaussiana',
@@ -303,6 +344,7 @@ plot \
         4096  0.484591663       6.21117605E-03
         8192  0.499293566       4.25777957E-03`
   }
+
 ];
 
 export const categories = Array.from(new Set(gnuplotExamples.map(ex => ex.category)));
